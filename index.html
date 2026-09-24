@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QC Banana PG1</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <i class="ph ph-plant"></i>
+        </div>
+        <div class="brand-text">
+          <h2>QC Banana PG1</h2>
+          <span>Plantation System</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-link active">
+          <i class="ph ph-squares-four"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="ph ph-map-pin"></i>
+          <span>Plot Perkebunan</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="ph ph-clipboard-text"></i>
+          <span>Inspeksi Daun</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="ph ph-scales"></i>
+          <span>Panen & Buah</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="ph ph-chart-donut"></i>
+          <span>Laporan Mutu</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="QC Officer" class="avatar">
+          <div class="user-info">
+            <span class="user-name">Sarah Amalia</span>
+            <span class="user-role">Divisi Quality Control</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="plot-filter-container">
+          <i class="ph ph-funnel filter-icon"></i>
+          <label for="plotSelect">Filter Plot:</label>
+          <select id="plotSelect" onchange="filterPlotData(this.value)">
+            <option value="ALL">Semua Plot Perkebunan</option>
+            <option value="Plot A">Plot A - Cavendish Ultra (Sektor Barat)</option>
+            <option value="Plot B">Plot B - Mas Kirana (Sektor Timur)</option>
+            <option value="Plot C">Plot C - Raja Bulu (Sektor Utara)</option>
+            <option value="Plot D">Plot D - Cavendish Premium (Sektor Selatan)</option>
+          </select>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="openModal()">
+            <i class="ph ph-plus-circle"></i>
+            Input Inspeksi QC
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="dashboard-body">
+        
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+          <div>
+            <h1>Dashboard Quality Control Perkebunan Pisang</h1>
+            <p>Pemantauan real-time mutu buah, tingkat infeksi penyakit daun, dan grading komoditas panen.</p>
+          </div>
+          <div class="date-badge">
+            <i class="ph ph-calendar"></i>
+            <span id="currentDate">24 September 2026</span>
+          </div>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Total Sampel Diuji</span>
+              <div class="metric-icon icon-blue"><i class="ph ph-selection-all"></i></div>
+            </div>
+            <h2 class="metric-value" id="statTotalSample">1,480 <small>tandan</small></h2>
+            <div class="metric-sub text-muted">
+              <i class="ph ph-clock"></i> 7 hari terakhir
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Pass Rate (Grade A)</span>
+              <div class="metric-icon icon-green"><i class="ph ph-check-circle"></i></div>
+            </div>
+            <h2 class="metric-value text-green" id="statPassRate">82.4%</h2>
+            <div class="metric-sub text-green">
+              <i class="ph ph-trend-up"></i> +3.1% dibanding minggu lalu
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Tingkat Infeksi Sigatoka</span>
+              <div class="metric-icon icon-amber"><i class="ph ph-warning-circle"></i></div>
+            </div>
+            <h2 class="metric-value text-amber" id="statSigatoka">4.2%</h2>
+            <div class="metric-sub text-green">
+              <i class="ph ph-trend-down"></i> -1.5% (Tercapai Target QC &lt; 5%)
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Reject Rate</span>
+              <div class="metric-icon icon-red"><i class="ph ph-x-circle"></i></div>
+            </div>
+            <h2 class="metric-value text-red" id="statRejectRate">5.8%</h2>
+            <div class="metric-sub text-red">
+              <i class="ph ph-warning"></i> Didominasi getah & memar mekanis
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Charts Grid -->
+        <div class="charts-grid">
+          <!-- Line Chart: Disease Trend -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Tren Infeksi Penyakit Daun</h3>
+                <p class="card-subtitle">Evolusi infeksi Sigatoka & Layu Moko/BDB per minggu (%)</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="diseaseTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Doughnut Chart: Fruit Quality Grade Distribution -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Distribusi Mutu Buah (Grading)</h3>
+                <p class="card-subtitle">Persentase klasifikasi standar mutu panen</p>
+              </div>
+            </div>
+            <div class="chart-container doughnut-container">
+              <canvas id="gradeDistributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Table: Inspection Logs -->
+        <div class="card table-card">
+          <div class="card-header flex-between">
+            <div>
+              <h3>Log Inspeksi QC Lapangan</h3>
+              <p class="card-subtitle">Hasil pemeriksaan sampling kualitas fisik buah dan kesehatan pohon</p>
+            </div>
+            <div class="table-actions">
+              <input type="text" id="searchInput" class="search-input" placeholder="Cari Kode Plot / Pohon..." onkeyup="searchTable()">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table id="qcTable">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Plot Wilayah</th>
+                  <th>ID Pohon</th>
+                  <th>Bobot Tandan</th>
+                  <th>Kondisi Daun (Sigatoka)</th>
+                  <th>Kecacatan Fisik Buah</th>
+                  <th>Status Grade</th>
+                  <th>Petugas QC</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- Populated via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Form Input Inspeksi QC -->
+  <div class="modal-backdrop" id="qcModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Input Data Inspeksi QC Baru</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="qcForm" onsubmit="handleFormSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Plot Wilayah</label>
+            <select id="formPlot" required>
+              <option value="Plot A">Plot A - Cavendish Ultra</option>
+              <option value="Plot B">Plot B - Mas Kirana</option>
+              <option value="Plot C">Plot C - Raja Bulu</option>
+              <option value="Plot D">Plot D - Cavendish Premium</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>ID Pohon / Block</label>
+              <input type="text" id="formTreeId" placeholder="Misal: A-102" required>
+            </div>
+            <div class="form-group">
+              <label>Bobot Tandan (kg)</label>
+              <input type="number" step="0.1" id="formWeight" placeholder="Misal: 24.5" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Status Kesehatan Daun (Penyakit)</label>
+            <select id="formLeafStatus" required>
+              <option value="Sehat (0%)">Sehat (Bebas Gejala)</option>
+              <option value="Sigatoka Ringan (<10%)">Sigatoka Ringan (&lt;10%)</option>
+              <option value="Sigatoka Sedang (10-30%)">Sigatoka Sedang (10-30%)</option>
+              <option value="Sigatoka Berat (>30%)">Sigatoka Berat (&gt;30%)</option>
+              <option value="Gejala Layu Moko / BDB">Gejala Layu Moko / BDB</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Defect / Cacat Fisik Buah</label>
+            <input type="text" id="formDefect" placeholder="Misal: Noda getah, gesekan angin, ukuran kecil, dll.">
+          </div>
+
+          <div class="form-group">
+            <label>Hasil Grade Quality Control</label>
+            <select id="formGrade" required>
+              <option value="Grade A">Grade A (Ekspor / Super)</option>
+              <option value="Grade B">Grade B (Lokal Premium)</option>
+              <option value="Grade C">Grade C (Pasar Olahan)</option>
+              <option value="Reject">Reject (Afkir / Terinfeksi)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Hasil Inspeksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
